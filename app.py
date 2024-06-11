@@ -6,34 +6,33 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 # Define the search function
-def search_links(keyword):
-    # Calculate the date 1 week ago
+def search_links(keyword, sites):
     one_week_ago = datetime.now() - timedelta(days=7)
     formatted_date = one_week_ago.strftime('%Y-%m-%d')
-    
-    # Perform a search query (using Google for simplicity)
-    query = f"{keyword} after:{formatted_date}"
-    url = f"https://www.google.com/search?q={query}"
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = requests.get(url, headers=headers)
-    
-    if response.status_code != 200:
-        return []
-
-    soup = BeautifulSoup(response.text, 'html.parser')
     links = []
 
-    for g in soup.find_all('div', class_='BVG0Nb'):
-        link = g.find('a')
-        if link and 'href' in link.attrs:
-            links.append(link['href'])
-        if len(links) >= 20:
-            break
+    for site in sites:
+        query = f"{keyword} site:{site} after:{formatted_date}"
+        url = f"https://www.google.com/search?q={query}"
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            continue
 
-    return links
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        for g in soup.find_all('div', class_='BVG0Nb'):
+            link = g.find('a')
+            if link and 'href' in link.attrs:
+                links.append(link['href'])
+            if len(links) >= 20:
+                break
+
+    return links[:20]  # Limit to 20 links
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -42,13 +41,14 @@ def index():
         keyword1 = request.form.get('keyword1')
         keyword2 = request.form.get('keyword2')
         keyword3 = request.form.get('keyword3')
+        sites = request.form.get('sites').split(',')
 
         if keyword1:
-            results['Keyword 1'] = search_links(keyword1)
+            results['Keyword 1'] = search_links(keyword1, sites)
         if keyword2:
-            results['Keyword 2'] = search_links(keyword2)
+            results['Keyword 2'] = search_links(keyword2, sites)
         if keyword3:
-            results['Keyword 3'] = search_links(keyword3)
+            results['Keyword 3'] = search_links(keyword3, sites)
 
     return render_template('index.html', results=results)
 
