@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keyword Search</title>
+    <title>올뺌 Keyword Search</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="icon" href="/img/favicon.ico">
+    <link rel="icon" href="favicon.ico">
 </head>
 <body>
     <div class="container">
-        <h1>Keyword Search</h1>
+        <h1>올뺌 Search Engine</h1>
         <form method="post" class="search-form">
             <label for="keyword1">Keyword 1:</label>
             <input type="text" id="keyword1" name="keyword1"><br><br>
@@ -16,6 +20,8 @@
             <input type="text" id="keyword2" name="keyword2"><br><br>
             <label for="keyword3">Keyword 3:</label>
             <input type="text" id="keyword3" name="keyword3"><br><br>
+            <label for="sites">Sites (comma-separated):</label>
+            <input type="text" id="sites" name="sites" placeholder="example.com,"><br><br>
             <input type="submit" value="Search">
         </form>
 
